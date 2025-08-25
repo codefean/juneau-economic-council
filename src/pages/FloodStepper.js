@@ -1,10 +1,8 @@
-// FloodStepper.js — Updated for Mapbox vector tiles (no .setData)
-
 import React, { useState, useEffect, useCallback } from 'react';
 import './FloodStepper.css';
 
 const customColors = [
-   "#87c210", "#c3b91e", "#e68a1e", "#31a354", "#3182bd", "#124187",
+  "#87c210", "#c3b91e", "#e68a1e", "#31a354", "#3182bd", "#124187",
   "#d63b3b", "#9b3dbd", "#d13c8f", "#c2185b", "#756bb1", "#f59380", "#ba4976",
 ];
 
@@ -51,7 +49,7 @@ const FloodStepper = ({
     }
 
     onFloodLayerChange();
-  }, [mapRef, onFloodLayerChange]);
+  }, [mapRef, selectedFloodLevel, onFloodLayerChange]);
 
   useEffect(() => {
     if (selectedFloodLevel) {
@@ -83,7 +81,10 @@ const FloodStepper = ({
   return (
     <div className="flood-stepper-wrapper">
       <div className={`stepper-container ${isMenuHidden ? 'menu-hidden' : ''}`}>
+        
+        {/* Step down */}
         <button
+          type="button"
           className="stepper-button"
           onClick={() => changeFloodLevel('down')}
           disabled={floodLevel === minFloodLevel}
@@ -91,6 +92,7 @@ const FloodStepper = ({
           −
         </button>
 
+        {/* Flood level card */}
         <div
           className={`flood-level-card ${isLayerVisible ? '' : 'dimmed'}`}
           style={{ backgroundColor: customColors[floodLevel - 8] }}
@@ -105,7 +107,9 @@ const FloodStepper = ({
           {floodLevel} ft
         </div>
 
+        {/* Step up */}
         <button
+          type="button"
           className="stepper-button"
           onClick={() => changeFloodLevel('up')}
           disabled={floodLevel === maxFloodLevel}
@@ -118,3 +122,4 @@ const FloodStepper = ({
 };
 
 export default FloodStepper;
+
