@@ -1,0 +1,79 @@
+.flood-popup-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+body {
+  margin: 0;
+  font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.flood-popup-box {
+  background: rgba(255, 255, 255, 0.937);
+  padding: 20px;
+  border-radius: 10px;
+  width: 80%; /* Makes it responsive */
+  max-width: 700px;
+  max-height: 600px;
+  text-align: center;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 1000px) {
+  .flood-popup-box {
+    width: 80%; /* Increase width on smaller screens */
+    padding: 15px; /* Reduce padding for better fit */
+  }
+
+  .flood-popup-box h2 {
+    font-size: 24px; /* Adjust title size */
+  }
+
+  .popup-close-button {
+    font-size: 14px; /* Slightly smaller button text */
+    padding: 8px 20px; /* Adjust button size */
+  }
+}
+
+
+.flood-popup-box h2 {
+  margin: 0 0 10px;
+  font-size: 28px; /* Adjust the size as needed */
+  font-weight: bold;
+  margin-bottom: -10px;
+  color: #0244a7;
+}
+
+.flood-popup-box p {
+  font-size: 16px;
+  margin-bottom: 15px;
+}
+
+.popup-close-button {
+  background-color: #0056d6;
+  color: white;
+  border: none;
+  padding: 10px 25px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.popup-close-button:hover {
+  background-color: #003f9a;
+}
+
+.reduce-top-margin {
+  margin-top: 5px; /* Adjust as needed */
+}
