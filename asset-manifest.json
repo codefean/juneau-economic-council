@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/juneau-economic-council/static/css/main.30995bf2.css",
-    "main.js": "/juneau-economic-council/static/js/main.f48b3472.js",
+    "main.js": "/juneau-economic-council/static/js/main.c4b09aea.js",
     "static/js/453.0a8f441b.chunk.js": "/juneau-economic-council/static/js/453.0a8f441b.chunk.js",
     "index.html": "/juneau-economic-council/index.html",
     "main.30995bf2.css.map": "/juneau-economic-council/static/css/main.30995bf2.css.map",
-    "main.f48b3472.js.map": "/juneau-economic-council/static/js/main.f48b3472.js.map",
+    "main.c4b09aea.js.map": "/juneau-economic-council/static/js/main.c4b09aea.js.map",
     "453.0a8f441b.chunk.js.map": "/juneau-economic-council/static/js/453.0a8f441b.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.30995bf2.css",
-    "static/js/main.f48b3472.js"
+    "static/js/main.c4b09aea.js"
   ]
 }
