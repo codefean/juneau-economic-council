@@ -13,7 +13,7 @@ import Loc from './loc';
 import './loc.css';
 
 
-// cd /Users/seanfagan/Desktop/juneau-economic-council
+// cd /Users/seanfagan/Desktop/juneau-economic-counci
 
 // Custom color palette for each flood level (64–76)
 const customColors = [
