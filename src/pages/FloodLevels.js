@@ -1,19 +1,13 @@
-import React, { useEffect, useRef, useState, useCallback } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import React, { useEffect, useRef, useState, useCallback, useMemo } from "react";
+import mapboxgl from "mapbox-gl";
+import "mapbox-gl/dist/mapbox-gl.css";
 
 // Local styles and components
-import './FloodLevels.css';
-import FloodStageMenu from './FloodStageMenu';        // Accordion for flood level impacts
-import FloodStepper from './FloodStepper';            // Stepper for selecting flood height
-import FloodInfoPopup from "./FloodInfoPopup";        // Info popup for map disclaimers
-import { getFloodStage } from './utils/floodStages';  // Util function for stage descriptions
-import Search from './Search.js';                     // Address search bar
-import Loc from './loc';
-import './loc.css';
-
-
-// cd /Users/seanfagan/Desktop/juneau-economic-counci
+import "./FloodLevels.css";
+import FloodStageMenu from "./FloodStageMenu";
+import FloodStepper from "./FloodStepper";
+import FloodInfoPopup from "./FloodInfoPopup";
+import { getFloodStage } from "./utils/floodStages";
 
 // Custom color palette for each flood level (64–76)
 const customColors = [
@@ -22,100 +16,26 @@ const customColors = [
 ];
 
 const FloodLevels = () => {
-  const mapContainerRef = useRef(null);   // DOM reference for Mapbox container
-  const mapRef = useRef(null);            // Stores the map instance
-
-  // UI state
-  const [selectedFloodLevel, setSelectedFloodLevel] = useState(9);      // Default is 9 ft
-  const [menuOpen, setMenuOpen] = useState(() => window.innerWidth >= 800); // Show menu on desktop
-  const [hescoMode, setHescoMode] = useState(false);                    // HESCO toggle
-  const [errorMessage] = useState('');                                  // Placeholder for errors
-  const [waterLevels, setWaterLevels] = useState([]);                   // Live USGS level
-  const [loadingLayers, setLoadingLayers] = useState(false);            // For loading overlay
+  const mapContainerRef = useRef(null);
+  const mapRef = useRef(null);
   const popupRef = useRef(null);
   const hoverHandlersRef = useRef({ move: null, out: null });
+
+  // UI state
+  const [selectedFloodLevel, setSelectedFloodLevel] = useState(9);
+  const [menuOpen, setMenuOpen] = useState(() => (typeof window !== "undefined" ? window.innerWidth >= 800 : true));
+  const [hescoMode, setHescoMode] = useState(false);
+  const [errorMessage] = useState("");
+  const [waterLevels, setWaterLevels] = useState([]);
+  const [loadingLayers, setLoadingLayers] = useState(false);
   const [mapReady, setMapReady] = useState(false);
+
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
-    /**
-   * Enables hover tooltips on flood layers to show water depth
+  /**
+   * Tileset IDs for flood levels
    */
-const setupHoverPopup = useCallback((activeLayerId) => {
-  const map = mapRef.current;
-  if (!map || !activeLayerId) return;
-
-  // Wait until layer exists
-  if (!map.getLayer(activeLayerId)) {
-    setTimeout(() => setupHoverPopup(activeLayerId), 250);
-    return;
-  }
-
-  // Remove prior handlers, if any
-  if (hoverHandlersRef.current.move) {
-    map.off('mousemove', hoverHandlersRef.current.move);
-    hoverHandlersRef.current.move = null;
-  }
-  if (hoverHandlersRef.current.out) {
-    map.off('mouseout', hoverHandlersRef.current.out);
-    hoverHandlersRef.current.out = null;
-  }
-
-  // Reuse a single popup instance
-  if (!popupRef.current) {
-    popupRef.current = new mapboxgl.Popup({
-      closeButton: false,
-      closeOnClick: false,
-      offset: 10,
-      className: 'hover-popup',
-    });
-  }
-
-
-  if (!mapRef.current.getSource('mapbox-dem')) {
-    mapRef.current.addSource('mapbox-dem', {
-      type: 'raster-dem',
-      url: 'mapbox://mapbox.mapbox-terrain-dem-v1',
-      tileSize: 512,
-      maxzoom: 14,
-    });
-  }
-  mapRef.current.setTerrain({ source: 'mapbox-dem', exaggeration: 1.0 });
-
-  const moveHandler = (e) => {
-    // Only consider features from the active layer
-    const features = map.queryRenderedFeatures(e.point, { layers: [activeLayerId] });
-    const feature = features && features[0];
-
-    if (feature) {
-      const props = feature.properties || {};
-      const depth = props.DN ?? props.depth ?? 'Unknown'; // try both keys
-      popupRef.current
-        .setLngLat(e.lngLat)
-        .setHTML(`<b>Water Depth: ${depth} ft</b>`)
-        .addTo(map);
-      map.getCanvas().style.cursor = 'crosshair';
-    } else {
-      popupRef.current.remove();
-      map.getCanvas().style.cursor = '';
-    }
-  };
-
-  const outHandler = () => {
-    popupRef.current.remove();
-    map.getCanvas().style.cursor = '';
-  };
-
-  map.on('mousemove', moveHandler);   // bind to map, not layer
-  map.on('mouseout', outHandler);
-
-  hoverHandlersRef.current.move = moveHandler;
-  hoverHandlersRef.current.out = outHandler;
-}, []);
-
-    /**
-   * Map of flood level tilesets (base vs HESCO)
-   */
-  const tilesetMap = {
+  const tilesetMap = useMemo(() => ({
     base: {
       64: "ccav82q0", 65: "3z7whbfp", 66: "8kk8etzn", 67: "akq41oym",
       68: "5vsqqhd8", 69: "awu2n97c", 70: "a2ttaa7t", 71: "0rlea0ym",
@@ -123,109 +43,206 @@ const setupHoverPopup = useCallback((activeLayerId) => {
       76: "avpruavl",
     },
     hesco: {
-      70: "cjs05ojz", 71: "1z6funv6", 72: "9kmxxb2g", 73: "4nh8p66z", 74: "cz0f7io4",
+      70: "cjs05ojz", 71: "1z6funv6", 72: "9kmxxb2g",
+      73: "4nh8p66z", 74: "cz0f7io4",
     },
+  }), []);
+
+  /**
+   * Utility: derive ids for a given level + mode variant
+   */
+  const idsFor = (level, mode /* boolean */) => {
+    const variant = mode ? "hesco" : "base";
+    const sourceId = `flood${level}-${variant}`;
+    const layerId = `${sourceId}-fill`;
+    return { sourceId, layerId, variant };
   };
 
-    /**
-   * Loads Mapbox vector tiles for all flood levels
+  /**
+   * Ensure a flood layer exists (adds source/layer once). Returns true if present/created.
    */
-const updateFloodLayers = (mode) => {
-  setLoadingLayers(true);
-  const map = mapRef.current;
-  const validLevels = Array.from({ length: 13 }, (_, i) => 64 + i); // 64–76
-  const visibleLayerId = `flood${64 + (selectedFloodLevel - 8)}-fill`;
+  const ensureFloodLayer = (map, mode, level) => {
+    const variant = mode ? "hesco" : "base";
+    const tilesetId = tilesetMap[variant][level];
+    if (!tilesetId) return false; // tileset not available for this level
 
-  // Remove old layers & sources
-  validLevels.forEach((level) => {
-    const layerId = `flood${level}-fill`;
-    const sourceId = `flood${level}`;
-    if (map.getLayer(layerId)) map.removeLayer(layerId);
-    if (map.getSource(sourceId)) map.removeSource(sourceId);
-  });
+    const { sourceId, layerId } = idsFor(level, mode);
+    const sourceLayerName = mode ? `flood${level}` : String(level);
 
-  let loadedCount = 0;
+    if (!map.getSource(sourceId)) {
+      map.addSource(sourceId, { type: "vector", url: `mapbox://mapfean.${tilesetId}` });
+    }
+    if (!map.getLayer(layerId)) {
+      map.addLayer({
+        id: layerId,
+        type: "fill",
+        source: sourceId,
+        "source-layer": sourceLayerName,
+        layout: { visibility: "none" },
+        paint: { "fill-color": customColors[level - 64], "fill-opacity": 0.4 },
+      });
+    }
+    return true;
+  };
 
-  validLevels.forEach((level) => {
-    const floodId = `flood${level}`;
-    const layerId = `${floodId}-fill`;
-    const visible = floodId === `flood${64 + (selectedFloodLevel - 8)}`;
+  /**
+   * Hover tooltips for water depth
+   */
+  const setupHoverPopup = useCallback((activeLayerId) => {
+    const map = mapRef.current;
+    if (!map || !activeLayerId) return;
 
-    const tilesetId = mode ? tilesetMap.hesco[level] : tilesetMap.base[level];
-    if (mode && !tilesetId) {
-      loadedCount++;
-      if (loadedCount === validLevels.length) {
-        setLoadingLayers(false);
-        map.once('idle', () => setupHoverPopup(visibleLayerId));
-      }
+    // Wait until style is ready
+    if (!map.isStyleLoaded()) {
+      map.once("style.load", () => setupHoverPopup(activeLayerId));
       return;
     }
 
-    const sourceLayerName = mode ? `flood${level}` : String(level);
-
-    map.addSource(floodId, {
-      type: 'vector',
-      url: `mapbox://mapfean.${tilesetId}`,
-    });
-
-    map.addLayer({
-      id: layerId,
-      type: 'fill',
-      source: floodId,
-      'source-layer': sourceLayerName,
-      layout: {
-        visibility: visible ? 'visible' : 'none',
-      },
-      paint: {
-        'fill-color': customColors[level - 64],
-        'fill-opacity': 0.4,
-      },
-    });
-
-    loadedCount++;
-    if (loadedCount === validLevels.length) {
-      setLoadingLayers(false);
-      // Wait until the map finishes rendering with the new layer
-      map.once('idle', () => setupHoverPopup(visibleLayerId));
+    // Wait until layer exists
+    if (!map.getLayer(activeLayerId)) {
+      setTimeout(() => setupHoverPopup(activeLayerId), 250);
+      return;
     }
-  });
-};
 
+    // Remove old event handlers if present
+    if (hoverHandlersRef.current.move) {
+      map.off("mousemove", hoverHandlersRef.current.move);
+      hoverHandlersRef.current.move = null;
+    }
+    if (hoverHandlersRef.current.out) {
+      map.getCanvas().removeEventListener("mouseleave", hoverHandlersRef.current.out);
+      hoverHandlersRef.current.out = null;
+    }
+
+    // Reuse a single popup instance
+    if (!popupRef.current) {
+      popupRef.current = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false,
+        offset: 10,
+        className: "hover-popup",
+      });
+    }
+
+    const moveHandler = (e) => {
+      const features = map.queryRenderedFeatures(e.point, { layers: [activeLayerId] });
+      const feature = features && features[0];
+
+      if (feature) {
+        const props = feature.properties || {};
+        const depth = props.DN ?? props.depth ?? "Unknown";
+        popupRef.current
+          .setLngLat(e.lngLat)
+          .setHTML(`<b>Water Depth: ${depth} ft</b>`)
+          .addTo(map);
+        map.getCanvas().style.cursor = "crosshair";
+      } else {
+        popupRef.current.remove();
+        map.getCanvas().style.cursor = "";
+      }
+    };
+
+    const outHandler = () => {
+      if (popupRef.current) popupRef.current.remove();
+      map.getCanvas().style.cursor = "";
+    };
+
+    map.on("mousemove", moveHandler);
+    map.getCanvas().addEventListener("mouseleave", outHandler);
+
+    hoverHandlersRef.current.move = moveHandler;
+    hoverHandlersRef.current.out = outHandler;
+  }, []);
 
   /**
-   * HESCO Mode Toggle Handler
+   * Updates flood layers based on selected level + mode
+   *
+   * Refactor: build layers once per variant and toggle visibility instead of
+   * removing/re-adding everything on each change.
+   */
+  const updateFloodLayers = (mode) => {
+    const map = mapRef.current;
+    if (!map || !map.isStyleLoaded()) {
+      map?.once("style.load", () => updateFloodLayers(mode));
+      return;
+    }
+
+    setLoadingLayers(true);
+    const validLevels = Array.from({ length: 13 }, (_, i) => 64 + i);
+    const targetLevel = 64 + (selectedFloodLevel - 8); // keep original mapping math
+
+    // Ensure layers exist for both variants as needed, then toggle visibility
+    validLevels.forEach((level) => {
+      // ensure current variant layer (if available)
+      ensureFloodLayer(map, mode, level);
+      // also ensure the opposite variant is known if ever needed later
+      // (not strictly required to ensure now)
+    });
+
+    // Hide all layers for both variants; show only the active one (if exists)
+    validLevels.forEach((level) => {
+      [false, true].forEach((m) => {
+        const { layerId } = idsFor(level, m);
+        if (map.getLayer(layerId)) {
+          const visible = (m === mode) && (level === targetLevel);
+          map.setLayoutProperty(layerId, "visibility", visible ? "visible" : "none");
+        }
+      });
+    });
+
+    setLoadingLayers(false);
+    const { layerId: visibleLayerId } = idsFor(targetLevel, mode);
+    map.once("idle", () => setupHoverPopup(visibleLayerId));
+  };
+
+  /**
+   * Toggles HESCO Mode (no page reloads)
    */
   const toggleHescoMode = () => {
     setHescoMode((prev) => {
       const newMode = !prev;
-      if (!newMode && window.innerWidth < 768) {
-        window.location.reload();
-      } else {
-        updateFloodLayers(newMode);
-        const visibleLayerId = `flood${64 + (selectedFloodLevel - 8)}-fill`;
-        setTimeout(() => setupHoverPopup(visibleLayerId), 300);
-      }
+      updateFloodLayers(newMode);
+      const targetLevel = 64 + (selectedFloodLevel - 8);
+      const { layerId } = idsFor(targetLevel, newMode);
+      setTimeout(() => setupHoverPopup(layerId), 300);
       return newMode;
     });
   };
 
   /**
-   * Mapbox Initialization
+   * Initialize Mapbox (only once)
    */
   useEffect(() => {
-    mapboxgl.accessToken = 'pk.eyJ1IjoibWFwZmVhbiIsImEiOiJjbTNuOGVvN3cxMGxsMmpzNThzc2s3cTJzIn0.1uhX17BCYd65SeQsW1yibA';
+    mapboxgl.accessToken =
+      "pk.eyJ1IjoibWFwZmVhbiIsImEiOiJjbTNuOGVvN3cxMGxsMmpzNThzc2s3cTJzIn0.1uhX17BCYd65SeQsW1yibA";
+
     if (!mapRef.current) {
       mapRef.current = new mapboxgl.Map({
         container: mapContainerRef.current,
-        style: 'mapbox://styles/mapbox/satellite-streets-v12',
+        style: "mapbox://styles/mapbox/satellite-streets-v12",
         center: [-134.572823, 58.397411],
         zoom: 11,
       });
 
-      mapRef.current.on('load', () => {
-        updateFloodLayers(hescoMode);
+      // Initialize DEM + Terrain ONCE when style loads
+      mapRef.current.on("style.load", () => {
+        if (!mapRef.current.getSource("mapbox-dem")) {
+          mapRef.current.addSource("mapbox-dem", {
+            type: "raster-dem",
+            url: "mapbox://mapbox.mapbox-terrain-dem-v1",
+            tileSize: 512,
+            maxzoom: 14,
+          });
+        }
+        mapRef.current.setTerrain({ source: "mapbox-dem", exaggeration: 1.0 });
 
-        // Add USGS gage markers
+        // Load flood layers AFTER style + terrain
+        updateFloodLayers(hescoMode);
+        setMapReady(true);
+      });
+
+      // Add USGS markers
+      mapRef.current.on("load", () => {
         const markerCoordinates = [
           {
             lat: 58.4293972,
@@ -246,8 +263,8 @@ const updateFloodLayers = (mode) => {
         ];
 
         markerCoordinates.forEach((coord) => {
-          const markerEl = document.createElement('div');
-          markerEl.className = 'usgs-marker';
+          const markerEl = document.createElement("div");
+          markerEl.className = "usgs-marker";
 
           const marker = new mapboxgl.Marker(markerEl)
             .setLngLat([coord.lng, coord.lat])
@@ -258,13 +275,42 @@ const updateFloodLayers = (mode) => {
             marker.setPopup(popup);
           }
         });
-        setMapReady(true);
       });
     }
-  }, [hescoMode]);
 
+    // Cleanup on unmount
+    return () => {
+      try {
+        const map = mapRef.current;
+        if (!map) return;
 
-  //* Resets HESCO mode if out-of-range level is selected
+        // remove hover handlers
+        if (hoverHandlersRef.current.move) {
+          map.off("mousemove", hoverHandlersRef.current.move);
+          hoverHandlersRef.current.move = null;
+        }
+        if (hoverHandlersRef.current.out) {
+          map.getCanvas().removeEventListener("mouseleave", hoverHandlersRef.current.out);
+          hoverHandlersRef.current.out = null;
+        }
+
+        // remove popups
+        if (popupRef.current) {
+          popupRef.current.remove();
+          popupRef.current = null;
+        }
+
+        // remove map
+        map.remove();
+        mapRef.current = null;
+      } catch {}
+    };
+  // IMPORTANT: run ONCE
+  }, []);
+
+  /**
+   * Reset HESCO mode if level out of range
+   */
   useEffect(() => {
     if (hescoMode && (selectedFloodLevel < 14 || selectedFloodLevel > 18)) {
       setHescoMode(false);
@@ -272,15 +318,18 @@ const updateFloodLayers = (mode) => {
     }
   }, [selectedFloodLevel, hescoMode]);
 
-  //* Updates hover popup when flood layer changes
+  /**
+   * Update hover popup when flood layer changes
+   */
   const handleFloodLayerChange = useCallback(() => {
-    const layerId = `flood${64 + (selectedFloodLevel - 8)}-fill`;
+    const targetLevel = 64 + (selectedFloodLevel - 8);
+    const { layerId } = idsFor(targetLevel, hescoMode);
     if (mapRef.current?.getLayer(layerId)) {
       setupHoverPopup(layerId);
     }
-  }, [selectedFloodLevel, setupHoverPopup]);
+  }, [selectedFloodLevel, hescoMode, setupHoverPopup]);
 
-//* Polls USGS API for live lake level data
+  // * Polls USGS API for live lake level data
   useEffect(() => {
     const fetchWaterLevels = async () => {
       const gages = [{ id: '15052500', name: 'Mendenhall Lake Stage Level' }];
@@ -315,14 +364,13 @@ const updateFloodLayers = (mode) => {
 
   return (
     <div>
-    
       <FloodInfoPopup />
       <div id="map" ref={mapContainerRef} style={{ height: '90vh', width: '100vw' }} />
+
+      {/* Menu toggle */}
       <button onClick={toggleMenu} className="menu-toggle-button">
         {menuOpen ? 'Hide Menu' : 'Show Menu'}
       </button>
-      {mapReady && <Loc mapRef={mapRef} />}
-
 
       {/* Mobile Stepper UI */}
       <div className="flood-stepper-container">
@@ -340,8 +388,6 @@ const updateFloodLayers = (mode) => {
       {/* Sidebar Menu (Desktop + Tablet) */}
       {menuOpen && (
         <div id="controls" style={{ position: 'absolute', top: '160px', left: '15px', zIndex: 1 }}>
-          <Search mapRef={mapRef} />
-          {errorMessage && <div style={{ color: 'red', marginTop: '10px' }}>{errorMessage}</div>}
           <FloodStepper
             mapRef={mapRef}
             selectedFloodLevel={selectedFloodLevel}
@@ -361,7 +407,11 @@ const updateFloodLayers = (mode) => {
           </button>
           <FloodStageMenu
             setFloodLevelFromMenu={setSelectedFloodLevel}
-            onFloodLayerChange={() => setupHoverPopup(`flood${64 + (selectedFloodLevel - 8)}-fill`)}
+            onFloodLayerChange={() => {
+              const targetLevel = 64 + (selectedFloodLevel - 8);
+              const { layerId } = idsFor(targetLevel, hescoMode);
+              setupHoverPopup(layerId);
+            }}
           />
           <div style={{ marginTop: '20px' }}>
             {waterLevels.map((level) => {
@@ -384,6 +434,7 @@ const updateFloodLayers = (mode) => {
           </div>
         </div>
       )}
+
       {loadingLayers && (
         <div className="map-loading-overlay">
           <div className="spinner" />

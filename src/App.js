@@ -4,7 +4,6 @@ import './App.css';
 import FloodLevels from './pages/FloodLevels.js';
 import Footer from './components/Footer';
 
-
 const useDocumentTitle = (title) => {
   React.useEffect(() => {
     document.title = title;
@@ -22,6 +21,9 @@ function App() {
       <div className="app-container">
         <div className="main-content">
           <Routes>
+            {/* Default homepage */}
+            <Route path="/" element={<FloodLevelsPage />} />
+            {/* Optional: keep the /flood-map alias */}
             <Route path="/flood-map" element={<FloodLevelsPage />} />
           </Routes>
         </div>
@@ -30,6 +32,5 @@ function App() {
     </Router>
   );
 }
-
 
 export default App;
