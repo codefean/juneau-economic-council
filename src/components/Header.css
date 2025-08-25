@@ -92,3 +92,27 @@
     display: block;
   }
 }
+
+/* Tablets */
+@media (max-width: 768px) {
+  .header-title {
+    font-size: 1.6rem;
+    padding: 0 8px;
+  }
+
+  .business-edition {
+    font-size: 1rem;
+  }
+}
+
+/* Phones - hide business edition */
+@media (max-width: 480px) {
+  .header-title {
+    font-size: 1.3rem;
+    padding: 0 6px;
+  }
+
+  .business-edition {
+    display: none;
+  }
+}
