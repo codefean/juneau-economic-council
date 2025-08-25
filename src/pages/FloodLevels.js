@@ -256,13 +256,13 @@ runWhenStyleReady(mapRef.current, () => {
   if (!map) return;
 
   // Add source (only once)
-  if (!map.getSource(BIZ_SOURCE_ID)) {
-    map.addSource(BIZ_SOURCE_ID, {
-      type: 'geojson',
-      data: '/businesses.geojson', // <-- file in /public
-    });
-  }
-
+    if (!map.getSource(BIZ_SOURCE_ID)) {
+      map.addSource(BIZ_SOURCE_ID, {
+        type: 'geojson',
+        // IMPORTANT: base-aware path for GitHub Pages
+        data: `${process.env.PUBLIC_URL}/businesses.geojson`,
+      });
+    }
   // Add a simple circle layer
   if (!map.getLayer(BIZ_LAYER_ID)) {
     map.addLayer({
