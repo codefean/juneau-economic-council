@@ -181,9 +181,28 @@ const FloodLevels = () => {
     runWhenStyleReady(map, () => updateFloodLayers(mode));
   }, [updateFloodLayers]);
 
-  const toggleHescoMode = () => {
-    setHescoMode((prev) => !prev);
-  };
+const toggleHescoMode = () => {
+  setHescoMode((prev) => {
+    const newMode = !prev;
+
+    // Only allow HESCO mode between 14ft and 18ft
+    if (newMode && (selectedFloodLevel < 14 || selectedFloodLevel > 18)) {
+      // If user clicks when out of range, fallback to base maps
+      safeUpdateFloodLayers(false);
+      return false;
+    }
+
+    // Update flood layers based on mode
+    safeUpdateFloodLayers(newMode);
+
+    // Reattach hover popups for the new visible layer
+    const visibleLayerId = `flood${64 + (selectedFloodLevel - 8)}-fill`;
+    setTimeout(() => setupHoverPopup(visibleLayerId), 300);
+
+    return newMode;
+  });
+};
+
 
   // ✅ INIT EFFECT — run once on mount (no remounts when state/callbacks change)
   useEffect(() => {
