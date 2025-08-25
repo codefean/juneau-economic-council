@@ -1,0 +1,85 @@
+.navigation {
+  background-color: #0c5c95; /* Teal background */
+  padding: 4px 15px;
+  position: relative;
+}
+
+/* Responsive Styles */
+@media (max-width: 865px) {
+  .navigation {
+    padding: 0px 10px; /* Thinner on mobile */
+    max-height: 55px;
+  }
+}
+
+.navigation .menu-toggle {
+  display: none; /* Hide by default */
+  cursor: pointer;
+  color: white;
+  font-size: 1.5em;
+  text-align: center;
+  margin-bottom: 11px;
+  margin-top: 1px;
+}
+
+.navigation ul {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  flex-wrap: wrap;
+  z-index: 1000;
+}
+
+.navigation ul li {
+  margin: 0 20px; /* Space between menu items */
+  text-align: center; /* Center-align text within each item */
+}
+
+.navigation ul li a {
+  color: white;
+  text-decoration: none;
+  font-family: 'Open Sans', Arial, sans-serif;
+  font-size: 1.1em;
+  transition: color 0.3s ease, border-bottom 0.3s ease;
+  border-bottom: 2px solid transparent;
+  text-align: center; /* Ensures links are centered within their container */
+}
+
+.navigation ul li a:hover {
+  color: #fa4444;
+  border-bottom: 2px solid #ff4444;
+}
+
+
+/* Responsive Styles */
+@media (max-width: 925px) {
+  .navigation .menu-toggle {
+    display: block; /* Show the menu toggle on smaller screens */
+  }
+
+  .navigation ul {
+    display: none; /* Hide menu by default */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #0c5c95;
+    width: 100%;
+    position: absolute;
+    left: 0;
+  }
+
+  .navigation ul.open {
+    display: flex; /* Show menu when toggled */
+  }
+
+  .navigation ul li {
+    margin: 10px 0; /* Add spacing for stacked items */
+  }
+
+  .navigation ul li a {
+    font-size: 1em; /* Adjust font size for smaller screens */
+  }
+}

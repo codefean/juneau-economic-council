@@ -1,25 +1,35 @@
-import logo from './logo.svg';
+import React from 'react';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
+import FloodLevels from './pages/FloodLevels.js';
+import Footer from './components/Footer';
+
+
+const useDocumentTitle = (title) => {
+  React.useEffect(() => {
+    document.title = title;
+  }, [title]);
+};
+
+const FloodLevelsPage = () => {
+  useDocumentTitle("Juneau Flood Maps");
+  return <FloodLevels />;
+};
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="app-container">
+        <div className="main-content">
+          <Routes>
+            <Route path="/flood-map" element={<FloodLevelsPage />} />
+          </Routes>
+        </div>
+        <Footer />
+      </div>
+    </Router>
   );
 }
+
 
 export default App;

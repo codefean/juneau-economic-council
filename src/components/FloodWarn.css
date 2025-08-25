@@ -1,0 +1,59 @@
+.flood-warn-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px 20px;
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  z-index: 1000;
+  display: none; /* Hide by default */
+}
+
+@media (min-width: 1100px) { /* Only show for desktop users */
+  .flood-warn-header {
+    display: flex;
+  }
+}
+
+.flood-status-btn {
+  text-decoration: none;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: bold;
+  background-color: #0c5c95;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  cursor: pointer;
+}
+
+.flood-status-btn:hover {
+  background-color: #9d0303;
+}
+
+
+.flood-status {
+  margin-right: 15px;
+}
+
+.flood-alert-btn {
+  background-color: #9d0303;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.flood-alert-btn:hover {
+  background-color: #00509e;
+}
+.nws-label {
+  font-weight: normal; /* Removes bold styling */
+}

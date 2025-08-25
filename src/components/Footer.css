@@ -1,0 +1,105 @@
+/* Footer Styling */
+.footer {
+  background-color: #002c4d;
+  color: white;
+  font-size: 12px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  word-wrap: break-word;
+  padding: 1rem;
+}
+
+.footer a {
+  color: white;
+}
+
+.footer a:hover {
+  text-decoration: none;
+}
+
+.footer p {
+  font-size: 14px;
+  line-height: 1.1;
+  max-width: 90%;
+  margin: 7px 0;
+  text-align: center;
+}
+
+/* Flex layout to push footer down */
+html, body {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+
+.footer-logos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; /* This centers all logos horizontally */
+  align-items: center;
+  gap: 20px; /* spacing between logos */
+  margin-top: 10px;
+  max-width: 90%;
+  margin-bottom: 15px;
+}
+
+
+.footer-logo {
+  max-width: 170px;   /* bump this up */
+  max-height: 80px;   /* bump this up too */
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin: 0 auto;
+}
+
+
+/* Desktop */
+@media screen and (min-width: 1024px) {
+  .footer-logos {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  }
+}
+
+@media screen and (min-width: 601px) and (max-width: 1024px) {
+  .footer-logos {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 24px;
+  }
+
+  .footer-logo {
+    max-height: 70px;
+  }
+}
+
+
+/* Mobile */
+@media screen and (max-width: 600px) {
+  .footer {
+    font-size: 11px;
+    padding: 20px 10px;
+    margin-top: 3px;
+  }
+
+  .footer p {
+    max-width: 95%;
+    margin: 8px 0;
+    margin-right: 30px;
+    margin-left: 5px;
+    line-height: 1.1;
+    word-break: break-word;
+  }
+
+  .footer-logos {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    padding: 0 10px;
+    margin-top: 15px;
+  }
+}
+

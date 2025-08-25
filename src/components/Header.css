@@ -1,0 +1,90 @@
+/* Header container */
+.header {
+  background-color: #002c4d;
+  color: white;
+  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Open Sans', Arial, sans-serif;
+  position: relative;
+  flex-wrap: wrap; /* Allow wrapping for mobile */
+}
+
+/* Title stays centered and adapts to screen size */
+.header-title {
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0 10px;
+  flex-direction: column;
+}
+
+/* Responsive text inside header */
+.header-title h1,
+.header-title h2,
+.header-title h3,
+.header-title p,
+.header-title div {
+  font-size: clamp(1rem, 5vw, 2.2rem); /* Scales between 1rem and 2rem */
+  margin: 0;
+  word-break: break-word;
+}
+
+
+/* Logo styles */
+.header-image {
+  position: absolute;
+  left: 15px;
+  display: none; /* Hide by default on small screens */
+  align-items: center;
+  padding-top: 6px;     /* Add padding to top */
+
+}
+
+/* Default image scaling for mobile */
+.header-image img {
+  width: auto;
+  height: auto;
+  max-height: 70px; /* Adjust for mobile */
+  max-width: 100%;
+}
+
+/* Show and scale logo on larger screens */
+@media (min-width: 1238px) {
+  .header-image {
+    display: flex;
+  }
+}
+
+/* Add spacing between logos */
+.header-image a {
+  margin-right: 10px;
+}
+
+/* Ensure logos are aligned and scaled well */
+.header-image img {
+  height: auto;
+  max-height: 70px;
+  max-width: 100%;
+  object-fit: contain;
+}
+
+.header-image a:first-child {
+  margin-right: 12px;
+}
+
+.header-subtitle {
+  font-size: 0.65rem !important;
+  color: #e0e0e0;
+  display: none; /* hidden by default */
+}
+
+/* Show on smaller screens */
+@media (max-width: 500px) {
+  .header-subtitle {
+    display: block;
+  }
+}

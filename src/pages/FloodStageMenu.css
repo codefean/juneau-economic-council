@@ -1,0 +1,86 @@
+.accordion-container {
+  font-family: 'Open Sans', sans-serif;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 10px;
+  width: 100%; /* Adjust width to reduce it */
+  max-width: 300px; /* Limit maximum width */
+  margin-left: 10px;
+  margin-right: auto; /* Fixing the missing 'px' */
+  display: flex; /* Prevent expansion */
+  flex-direction: column; /* Ensure content stacks vertically */
+}
+
+.accordion-section {
+  cursor: pointer;
+  box-sizing: border-box; /* Include padding/border in width calculation */
+  padding: 10px 15px;
+  color: rgb(0, 0, 0);
+  font-size: 16px;
+  transition: background-color 0.3s ease, padding 0.2s ease;
+}
+
+.accordion-section h4 {
+  margin: 0;
+}
+
+.accordion-content {
+  width: 100%; /* Prevent expansion beyond parent */
+  padding: 5px 15px;
+  color: #000000;
+  font-size: 14px;
+  line-height: 1.5;
+  box-sizing: border-box; /* Include padding in width calculation */
+  max-height: 150px; /* Restrict height */
+  overflow-y: auto; /* Enable scrolling for long content */
+  font-family: 'Open Sans', sans-serif;
+}
+
+/* Color coding for different flood stages */
+.action-stage {
+  background-color: #e4e406; /* Yellow */
+}
+
+.minor-stage {
+  background-color: #ffaa00; /* Orange */
+}
+
+.moderate-stage {
+  background-color: #ff4500; /* Red */
+}
+
+.major-stage {
+  background-color: #b604b6; /* Purple */
+}
+
+.accordion-section:hover {
+  opacity: 0.9;
+}
+
+/* Mobile responsive adjustments */
+@media (max-width: 768px) {
+  .accordion-container {
+    position: relative;
+    top: -15px;
+    max-width: 300px; /* Limit maximum width */
+    margin-left: 10px; /* Keep space from the edge */
+    right: auto; /* Prevents stretching */
+  }
+}
+
+
+.accordion-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.accordion-arrow {
+  margin-left: 8px;
+  transition: transform 0.3s ease;
+  font-size: 0.9rem;
+}
+
+.accordion-arrow.open {
+  transform: rotate(90deg);
+}

@@ -1,0 +1,210 @@
+/* General Styles */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Open Sans', sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+}
+
+.flood-tracker {
+  text-align: center;
+  padding: 20px;
+}
+
+.flood-tracker h1 {
+  color: #00509e;
+  font-size: 2rem;
+  margin-bottom: 10px;
+}
+
+.flood-tracker p {
+  margin: 10px 0 20px;
+  font-size: 1rem;
+  color: #555;
+}
+
+/* Content Layout */
+.flood-content, .lake-level-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap; /* Ensures responsiveness */
+}
+
+.flood-image, 
+.flood-graph, 
+.hydrograph-image, 
+.risk-chart {
+  flex: 1 1 300px; /* Ensures both take equal space */
+  max-width: 45%; /* Prevents overly large elements */
+  aspect-ratio: 4 / 3; /* Adjusts to desired ratio */
+}
+
+/* Information Card */
+.info-card {
+  position: relative;
+  width: 85%; /* Make it take the full width of the container */
+  max-width: 100%; /* Prevent it from exceeding the screen width */
+  background-color: rgba(255, 255, 255, 0.9);
+  padding: 15px 20px; /* Add padding for spacing */
+  border-radius: 10px;
+  font-size: 1rem;
+  color: #000000;
+  text-align: center;
+  margin: 20px auto;
+  line-height: 1.5;
+}
+
+.info-card h2 {
+  margin-top: 0;
+  margin-bottom: 10px;
+  font-size: 1.75rem;
+  color: #00509e;
+}
+
+.info-card p {
+  margin: 5px 0;
+  font-weight: 400;
+  color: #000000;
+}
+
+.info-card-close-button {
+  position: absolute; 
+  top: 10px; 
+  right: 10px; 
+  width: 24px; 
+  height: 24px; 
+  background-color: #0044ff; 
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.info-card-close-button:hover {
+  background-color: #cc0000; 
+  transform: scale(1.1);
+}
+
+/* Risk Chart Table */
+.risk-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.risk-chart table {
+  width: 100%;
+  max-height: 400px; /* Max height of the table */
+  border-collapse: collapse;
+  font-size: 1rem;
+  text-align: left;
+  background-color: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.risk-chart th, 
+.risk-chart td {
+  padding: 12px 15px;
+  border: 1px solid #ddd;
+}
+
+.risk-chart th {
+  background-color: #f4f4f4;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Clickable Rows */
+.clickable-row {
+  cursor: pointer;
+  background-color: #f9f9f9;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.clickable-row:hover {
+  background-color: #e0e0e0;
+}
+
+/* Expanded Content */
+.extra-info {
+  max-height: 0; /* Initially hidden */
+  overflow: hidden;
+  transition: max-height 0.3s ease-in-out;
+}
+
+.extra-info.expanded {
+  max-height: 200px; /* Max height for expanded content */
+  overflow: visible;
+  background-color: #fefefe;
+  color: #555;
+  font-style: italic;
+  border-top: 1px solid #ddd;
+}
+
+/* Highlight Colors */
+.risk-chart .major {
+  background-color: #f8d7da; /* Light red */
+  color: #721c24;
+  font-weight: bold;
+}
+
+.risk-chart .moderate {
+  background-color: #fff3cd; /* Light yellow */
+  color: #856404;
+  font-weight: bold;
+}
+
+.risk-chart .minor {
+  background-color: #d4edda; /* Light green */
+  color: #155724;
+  font-weight: bold;
+}
+
+.risk-chart .action {
+  background-color: #d1ecf1; /* Light blue */
+  color: #0c5460;
+  font-weight: bold;
+}
+
+/* Media Query for Smaller Screens */
+@media (max-width: 768px) {
+  .flood-content, .lake-level-content {
+    flex-direction: column; /* Stack items vertically */
+  }
+
+  .flood-image, 
+  .flood-graph, 
+  .hydrograph-image, 
+  .risk-chart {
+    max-width: 90%; /* Adjust size for smaller screens */
+  }
+
+  .risk-chart table {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .flood-image, 
+  .flood-graph, 
+  .hydrograph-image, 
+  .risk-chart {
+    max-width: 100%; /* Full width for small screens */
+  }
+
+  .risk-chart table {
+    font-size: 0.8rem; /* Compact font for smaller screens */
+  }
+
+  .info-card {
+    font-size: 0.9rem;
+  }
+}
