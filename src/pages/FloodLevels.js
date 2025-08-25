@@ -8,6 +8,8 @@ import FloodInfoPopup from "./FloodInfoPopup";
 import { getFloodStage } from './utils/floodStages';
 import Search from './Search.js';
 
+// cd /Users/seanfagan/Desktop/juneau-economic-council
+
 // ✅ Set your Mapbox token directly
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFwZmVhbiIsImEiOiJjbTNuOGVvN3cxMGxsMmpzNThzc2s3cTJzIn0.1uhX17BCYd65SeQsW1yibA';
 
@@ -243,6 +245,74 @@ const FloodLevels = () => {
       setupHoverPopup(target);
     });
   }, [selectedFloodLevel, mapReady, setupHoverPopup]);
+
+  // IDs so we can reference consistently
+const BIZ_SOURCE_ID = 'businesses';
+const BIZ_LAYER_ID  = 'businesses-layer';
+
+// Call once after the map is ready (e.g., right after setMapReady(true))
+runWhenStyleReady(mapRef.current, () => {
+  const map = mapRef.current;
+  if (!map) return;
+
+  // Add source (only once)
+  if (!map.getSource(BIZ_SOURCE_ID)) {
+    map.addSource(BIZ_SOURCE_ID, {
+      type: 'geojson',
+      data: '/businesses.geojson', // <-- file in /public
+    });
+  }
+
+  // Add a simple circle layer
+  if (!map.getLayer(BIZ_LAYER_ID)) {
+    map.addLayer({
+      id: BIZ_LAYER_ID,
+      type: 'circle',
+      source: BIZ_SOURCE_ID,
+      paint: {
+        'circle-radius': 5,
+        'circle-color': '#ff6600',
+        'circle-stroke-width': 1,
+        'circle-stroke-color': '#ffffff',
+      },
+    });
+  }
+
+  // Hover popup showing USER_Busin
+  const bizPopup = new mapboxgl.Popup({
+    closeButton: false,
+    closeOnClick: false,
+    offset: 10,
+    className: 'business-popup',
+  });
+
+  const onMove = (e) => {
+    const f = e.features && e.features[0];
+    const name = f?.properties?.USER_Busin || 'Unknown';
+    bizPopup
+      .setLngLat(e.lngLat)
+      .setHTML(`<b>${name}</b>`)
+      .addTo(map);
+    map.getCanvas().style.cursor = 'pointer';
+  };
+
+  const onLeave = () => {
+    bizPopup.remove();
+    map.getCanvas().style.cursor = '';
+  };
+
+  // Bind to the layer so only business points trigger it
+  map.on('mousemove', BIZ_LAYER_ID, onMove);
+  map.on('mouseleave', BIZ_LAYER_ID, onLeave);
+
+  // Optional: clean up if you ever remove the layer/source later
+  // (You can also put this in your existing cleanup)
+  map.once('remove', () => {
+    map.off('mousemove', BIZ_LAYER_ID, onMove);
+    map.off('mouseleave', BIZ_LAYER_ID, onLeave);
+  });
+});
+
 
   return (
     <div>

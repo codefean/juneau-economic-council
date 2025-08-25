@@ -2,7 +2,7 @@
 .header {
   background-color: #002c4d;
   color: white;
-  padding: 10px 15px;
+  padding: 22px 15px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -20,6 +20,10 @@
   text-align: center;
   padding: 0 10px;
   flex-direction: column;
+}
+
+.business-edition {
+  font-weight: normal;
 }
 
 /* Responsive text inside header */

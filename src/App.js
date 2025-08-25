@@ -2,6 +2,7 @@ import React from 'react';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import FloodLevels from './pages/FloodLevels.js';
+import Header from "./components/Header";
 
 const useDocumentTitle = (title) => {
   React.useEffect(() => {
@@ -18,6 +19,7 @@ function App() {
   return (
     <Router>
       <div className="app-container">
+        <Header />
         <div className="main-content">
           <Routes>
             {/* Default homepage */}
