@@ -1,17 +1,17 @@
-/* Header container */
+/* Keep header flex-based instead of absolute positioning */
 .header {
-  background-color: #002c4d;
+  background-color: #184B3D;
   color: white;
-  padding: 22px 15px;
+  padding: 14px 15px;
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: center; /* Title stays centered */
   font-family: 'Open Sans', Arial, sans-serif;
   position: relative;
-  flex-wrap: wrap; /* Allow wrapping for mobile */
+  flex-wrap: wrap;
 }
 
-/* Title stays centered and adapts to screen size */
+/* Title always centered */
 .header-title {
   flex-grow: 1;
   display: flex;
@@ -22,82 +22,39 @@
   flex-direction: column;
 }
 
-.business-edition {
-  font-weight: normal;
-}
-
-/* Responsive text inside header */
-.header-title h1,
-.header-title h2,
-.header-title h3,
-.header-title p,
-.header-title div {
-  font-size: clamp(1rem, 5vw, 2.2rem); /* Scales between 1rem and 2rem */
-  margin: 0;
-  word-break: break-word;
-}
-
-
-/* Logo styles */
+/* Logo containers */
 .header-image {
-  position: absolute;
-  left: 15px;
-  display: none; /* Hide by default on small screens */
+  display: flex;
   align-items: center;
-  padding-top: 6px;     /* Add padding to top */
-
+  padding-top: 6px;
 }
 
-/* Default image scaling for mobile */
+.header-image.left {
+  margin-right: auto; /* Stick JEDC to the far left */
+}
+
+.header-image.right {
+  margin-left: auto; /* Stick UAS to the far right */
+}
+
+/* Logo scaling */
 .header-image img {
   width: auto;
-  height: auto;
-  max-height: 70px; /* Adjust for mobile */
-  max-width: 100%;
-}
-
-/* Show and scale logo on larger screens */
-@media (min-width: 1238px) {
-  .header-image {
-    display: flex;
-  }
-}
-
-/* Add spacing between logos */
-.header-image a {
-  margin-right: 10px;
-}
-
-/* Ensure logos are aligned and scaled well */
-.header-image img {
   height: auto;
   max-height: 70px;
   max-width: 100%;
   object-fit: contain;
 }
 
-.header-image a:first-child {
-  margin-right: 12px;
-}
-
-.header-subtitle {
-  font-size: 0.65rem !important;
-  color: #e0e0e0;
-  display: none; /* hidden by default */
-}
-
-/* Show on smaller screens */
-@media (max-width: 500px) {
-  .header-subtitle {
-    display: block;
-  }
-}
-
-/* Tablets */
+/* Hide logos on small screens */
 @media (max-width: 768px) {
+  .header-image {
+    display: none;
+  }
+
   .header-title {
-    font-size: 1.6rem;
     padding: 0 8px;
+    font-size: 1.6rem;
   }
 
   .business-edition {
@@ -105,7 +62,7 @@
   }
 }
 
-/* Phones - hide business edition */
+/* Phones — hide "Business Edition" */
 @media (max-width: 480px) {
   .header-title {
     font-size: 1.3rem;
@@ -114,5 +71,21 @@
 
   .business-edition {
     display: none;
+  }
+}
+
+/* Hide both logos and Business Edition text below 1115px */
+@media (max-width: 1115px) {
+  .header-image {
+    display: none !important;
+  }
+
+  .business-edition {
+    display: none !important;
+  }
+
+  .header-title {
+    padding: 0 10px;
+    font-size: 1.8rem; /* Slightly adjust title size for better centering */
   }
 }

@@ -171,7 +171,7 @@ const bringBizLayerAboveFlood = useCallback(() => {
         paint: {
           'circle-radius': 4,
           'circle-pitch-scale': 'viewport',
-          'circle-color': '#ff6600',
+          'circle-color': '#E9A122',
           'circle-stroke-width': 1,
           'circle-stroke-color': '#ffffff',
           'circle-blur': 0.05,
