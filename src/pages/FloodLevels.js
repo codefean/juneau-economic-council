@@ -356,7 +356,6 @@ const FloodLevels = () => {
   };
 
 
-
 const getBusinessesInFloodZone = async () => {
   const map = mapRef.current;
   if (!map) {
@@ -370,10 +369,11 @@ const getBusinessesInFloodZone = async () => {
   }
 
   try {
-    // Use PUBLIC_URL so this works when the app is served under a subpath
-    const base = process.env.PUBLIC_URL || '';
-    const folder = hescoMode ? 'geojson_hesco' : '';
-    const floodGeoJsonUrl = `${base}/floodmaps${folder ? `/${folder}` : ''}/${selectedFloodLevel}.geojson`;
+    // Build the public S3 URL for flood map GeoJSONs
+    const folder = hescoMode ? "geojson_hesco" : "";
+    const floodGeoJsonUrl = `https://flood-events.s3.us-east-2.amazonaws.com${folder ? `/${folder}` : ''}/${selectedFloodLevel}.geojson`;
+
+    console.log(`🌊 Fetching flood map from: ${floodGeoJsonUrl}`);
 
     const res = await fetch(floodGeoJsonUrl, { cache: 'no-store' });
     if (!res.ok) {
@@ -390,7 +390,7 @@ const getBusinessesInFloodZone = async () => {
       return;
     }
 
-    // Flatten (handles MultiPolygon), and collect simple polygon features
+    // Flatten MultiPolygon → Polygon
     const polys = [];
     flattenEach(flood, (simple) => {
       if (simple?.geometry?.type === 'Polygon') polys.push(simple);
@@ -402,9 +402,7 @@ const getBusinessesInFloodZone = async () => {
       return;
     }
 
-    // Quick sanity check: are polygon coords in expected longitude range?
-    // (Juneau lon ≈ -134 to -133; lat ≈ 58)
-    // If not, you likely have flipped coords or wrong CRS.
+    // Sanity check coordinates (EPSG:4326)
     const firstRing = polys[0].geometry.coordinates?.[0];
     if (Array.isArray(firstRing) && firstRing[0]) {
       const [x, y] = firstRing[0];
@@ -416,13 +414,13 @@ const getBusinessesInFloodZone = async () => {
       }
     }
 
-    // Normalize business points and run the test
+    // Filter businesses within polygons
     const items = bizData.features
       .filter((biz) => {
         const coords = biz?.geometry?.coordinates;
         if (!coords || coords.length < 2) return false;
 
-        // Coerce to numbers and ensure [lng, lat] order
+        // Ensure numeric [lng, lat]
         let [lng, lat] = coords;
         lng = typeof lng === 'string' ? Number(lng) : lng;
         lat = typeof lat === 'string' ? Number(lat) : lat;
@@ -430,11 +428,8 @@ const getBusinessesInFloodZone = async () => {
 
         const pt = point([lng, lat]);
 
-        // Test against any polygon
-        for (let i = 0; i < polys.length; i++) {
-          if (booleanPointInPolygon(pt, polys[i])) return true;
-        }
-        return false;
+        // Check if inside any polygon
+        return polys.some((poly) => booleanPointInPolygon(pt, poly));
       })
       .map((biz) => ({
         name:
@@ -456,7 +451,6 @@ const getBusinessesInFloodZone = async () => {
     setBizResults({ level: selectedFloodLevel, items: [] });
   }
 };
-
 
 
   return (
