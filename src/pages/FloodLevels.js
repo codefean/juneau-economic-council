@@ -121,14 +121,31 @@ const FloodLevels = () => {
     return () => { cancelled = true; };
   }, []);
 
-  // --- Ensure business points are on TOP of flood layers --------------------
-  const bringBizLayerAboveFlood = useCallback(() => {
-    const map = mapRef.current;
-    if (!map) return;
-    if (!map.getLayer(BIZ_LAYER_ID)) return;
-    // No beforeId -> move to top
-    map.moveLayer(BIZ_LAYER_ID);
-  }, []);
+const bringBizLayerAboveFlood = useCallback(() => {
+  const map = mapRef.current;
+  if (!map) return;
+
+  // Ensure business layer exists
+  if (!map.getLayer(BIZ_LAYER_ID)) return;
+
+  // Force business layer to top visually
+  map.moveLayer(BIZ_LAYER_ID);
+
+  // Also prioritize pointer events by disabling them on flood layers
+  const validLevels = Array.from({ length: 13 }, (_, i) => 64 + i);
+  validLevels.forEach((level) => {
+    const floodLayer = `flood${level}-fill`;
+    if (map.getLayer(floodLayer)) {
+      map.setLayoutProperty(floodLayer, "visibility", "visible");
+      map.setPaintProperty(floodLayer, "fill-opacity", 0.4);
+      map.setLayerZoomRange(floodLayer, 0, 24);
+
+      // 🚀 Make sure flood layers don’t "steal" hover clicks
+      map.setLayerProperties?.(floodLayer, { "filter": ["==", "id", -1] });
+    }
+  });
+}, []);
+
 
   // --- Add businesses source/layer when map & data ready --------------------
   useEffect(() => {
@@ -479,7 +496,7 @@ const getBusinessesInFloodZone = async () => {
 
       {menuOpen && (
         <div id="controls" style={{ position: 'absolute', top: '160px', left: '15px', zIndex: 1 }}>
-          <Search mapRef={mapRef} />
+          <Search mapRef={mapRef} bizData={bizData} />
           {errorMessage && <div style={{ color: 'red', marginTop: '10px' }}>{errorMessage}</div>}
 
           <FloodStepper
