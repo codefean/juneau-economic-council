@@ -11,7 +11,7 @@ const useDocumentTitle = (title) => {
 };
 
 const FloodLevelsPage = () => {
-  useDocumentTitle("Juneau Flood Maps");
+  useDocumentTitle("JEDC Flood Maps");
   return <FloodLevels />;
 };
 
