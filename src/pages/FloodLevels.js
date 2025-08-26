@@ -82,8 +82,8 @@ const FloodLevels = () => {
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
       style: 'mapbox://styles/mapbox/light-v11',
-      center: [-134.572823, 58.397411], // Juneau region
-      zoom: 11.2,
+      center: [-134.582823, 58.387411], // Juneau region
+      zoom: 12,
       pitch: 0,
       bearing: 0,
       attributionControl: false,
@@ -222,58 +222,68 @@ const bringBizLayerAboveFlood = useCallback(() => {
 }, [mapReady, bizData, bringBizLayerAboveFlood]);
 
 
-  // --- Flood layers ---------------------------------------------------------
-  const setupHoverPopup = useCallback((activeLayerId) => {
-    const map = mapRef.current;
-    if (!map || !activeLayerId) return;
+const setupHoverPopup = useCallback((activeLayerId) => {
+  const map = mapRef.current;
+  if (!map || !activeLayerId) return;
 
-    runWhenStyleReady(map, () => {
-      // clear old handlers
-      if (hoverHandlersRef.current.layerId) {
-        const oldId = hoverHandlersRef.current.layerId;
-        if (hoverHandlersRef.current.move) map.off('mousemove', oldId, hoverHandlersRef.current.move);
-        if (hoverHandlersRef.current.out) map.off('mouseleave', oldId, hoverHandlersRef.current.out);
-        hoverHandlersRef.current.move = null;
-        hoverHandlersRef.current.out = null;
-        hoverHandlersRef.current.layerId = null;
-      }
+  runWhenStyleReady(map, () => {
+    // Remove old handlers
+    if (hoverHandlersRef.current.layerId) {
+      const oldId = hoverHandlersRef.current.layerId;
+      if (hoverHandlersRef.current.move) map.off('mousemove', oldId, hoverHandlersRef.current.move);
+      if (hoverHandlersRef.current.out) map.off('mouseleave', oldId, hoverHandlersRef.current.out);
+      hoverHandlersRef.current.move = null;
+      hoverHandlersRef.current.out = null;
+      hoverHandlersRef.current.layerId = null;
+    }
 
-      if (!popupRef.current) {
-        popupRef.current = new mapboxgl.Popup({
-          closeButton: false,
-          closeOnClick: false,
-          offset: 10,
-          className: 'hover-popup',
-        });
-      }
+    if (!popupRef.current) {
+      popupRef.current = new mapboxgl.Popup({
+        closeButton: false,
+        closeOnClick: false,
+        offset: 10,
+        className: 'hover-popup',
+      });
+    }
 
-      const moveHandler = (e) => {
-        const f = e.features && e.features[0];
-        const props = (f?.properties) || {};
-        const depth = props.DN ?? props.depth ?? 'Unknown';
-        const formatted = Number.isFinite(+depth) ? Number(depth).toFixed(1) : depth;
-        popupRef.current
-          .setLngLat(e.lngLat)
-          .setHTML(`<b>Water Depth: ${formatted} ft</b>`)
-          .addTo(map);
-        map.getCanvas().style.cursor = 'crosshair';
-      };
-
-      const outHandler = () => {
+    const moveHandler = (e) => {
+      // ✅ If hovering a business, skip flood popup
+      const bizFeatures = map.queryRenderedFeatures(e.point, { layers: [BIZ_LAYER_ID] });
+      if (bizFeatures.length > 0) {
         popupRef.current?.remove();
-        map.getCanvas().style.cursor = '';
-      };
-
-      if (map.getLayer(activeLayerId)) {
-        map.on('mousemove', activeLayerId, moveHandler);
-        map.on('mouseleave', activeLayerId, outHandler);
-        hoverHandlersRef.current.move = moveHandler;
-        hoverHandlersRef.current.out = outHandler;
-        hoverHandlersRef.current.layerId = activeLayerId;
-        activeLayerIdRef.current = activeLayerId;
+        return;
       }
-    });
-  }, []);
+
+      // Otherwise, show flood depth popup
+      const f = e.features && e.features[0];
+      const props = (f?.properties) || {};
+      const depth = props.DN ?? props.depth ?? 'Unknown';
+      const formatted = Number.isFinite(+depth) ? Number(depth).toFixed(1) : depth;
+
+      popupRef.current
+        .setLngLat(e.lngLat)
+        .setHTML(`<b>Water Depth: ${formatted} ft</b>`)
+        .addTo(map);
+
+      map.getCanvas().style.cursor = 'crosshair';
+    };
+
+    const outHandler = () => {
+      popupRef.current?.remove();
+      map.getCanvas().style.cursor = '';
+    };
+
+    if (map.getLayer(activeLayerId)) {
+      map.on('mousemove', activeLayerId, moveHandler);
+      map.on('mouseleave', activeLayerId, outHandler);
+      hoverHandlersRef.current.move = moveHandler;
+      hoverHandlersRef.current.out = outHandler;
+      hoverHandlersRef.current.layerId = activeLayerId;
+      activeLayerIdRef.current = activeLayerId;
+    }
+  });
+}, []);
+
 
   const updateFloodLayers = useCallback((mode) => {
     const map = mapRef.current;
