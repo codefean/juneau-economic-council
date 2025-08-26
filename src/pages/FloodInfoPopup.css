@@ -8,48 +8,44 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
-}
 
-body {
-  margin: 0;
-  font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  /* 👇 NEW: allow map clicks through the overlay */
+  pointer-events: none;
 }
 
 .flood-popup-box {
-  background: rgba(255, 255, 255, 0.937);
+  background: rgba(255, 255, 255, 0.94);
   padding: 20px;
   border-radius: 10px;
-  width: 80%; /* Makes it responsive */
+  width: 80%;
   max-width: 700px;
   max-height: 600px;
   text-align: center;
+
+  /* 👇 NEW: still allow clicking on the popup itself */
+  pointer-events: auto;
 }
 
 /* Responsive adjustments for smaller screens */
 @media (max-width: 1000px) {
   .flood-popup-box {
-    width: 80%; /* Increase width on smaller screens */
-    padding: 15px; /* Reduce padding for better fit */
+    width: 80%;
+    padding: 15px;
   }
 
   .flood-popup-box h2 {
-    font-size: 24px; /* Adjust title size */
+    font-size: 24px;
   }
 
   .popup-close-button {
-    font-size: 14px; /* Slightly smaller button text */
-    padding: 8px 20px; /* Adjust button size */
+    font-size: 14px;
+    padding: 8px 20px;
   }
 }
 
-
 .flood-popup-box h2 {
   margin: 0 0 10px;
-  font-size: 28px; /* Adjust the size as needed */
+  font-size: 28px;
   font-weight: bold;
   margin-bottom: -10px;
   color: #0244a7;
@@ -75,5 +71,5 @@ body {
 }
 
 .reduce-top-margin {
-  margin-top: 5px; /* Adjust as needed */
+  margin-top: 5px;
 }

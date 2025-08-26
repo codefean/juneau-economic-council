@@ -72,6 +72,7 @@ const FloodLevels = () => {
   const activeLayerIdRef = useRef(null);
 
   const [bizResults, setBizResults] = useState({ level: null, items: [] });
+  const [showLoadingPopup, setShowLoadingPopup] = useState(true);
 
   const toggleMenu = () => setMenuOpen((prev) => !prev);
 
@@ -482,11 +483,23 @@ const getBusinessesInFloodZone = async () => {
   }
 };
 
+  useEffect(() => {
+    if (!showLoadingPopup) return;
+    const timer = setTimeout(() => {
+      setShowLoadingPopup(false);
+    }, 10000); // 10 seconds
+    return () => clearTimeout(timer);
+  }, [showLoadingPopup]);
+
+  const handlePopupAccept = () => {
+    setShowLoadingPopup(false);
+  };
 
   return (
     <div>
       <FloodInfoPopup />
       <div id="map" ref={mapContainerRef} style={{ height: '90vh', width: '100vw' }} />
+      
 
       <button onClick={toggleMenu} className="menu-toggle-button">
         {menuOpen ? 'Hide Menu' : 'Show Menu'}
