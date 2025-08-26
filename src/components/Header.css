@@ -46,6 +46,11 @@
   object-fit: contain;
 }
 
+  .business-edition {
+    font-style: normal !important;
+    font-weight: normal;
+  }
+
 /* Hide logos on small screens */
 @media (max-width: 768px) {
   .header-image {
