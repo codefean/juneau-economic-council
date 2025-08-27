@@ -24,7 +24,7 @@ const FloodInfoPopup = () => {
       <div className="flood-popup-box">
         <h2>Loading Flood Levels</h2>
         <p>
-          Additionally, if the browser asks you to wait,
+          Additionally, the browser may ask you to wait,
           click <strong>“wait for page to load”</strong> as this data is dense. After you accept, click to the next flood level to begin.
         </p>
         <button onClick={handleClose} className="popup-close-button">
