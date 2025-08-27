@@ -413,6 +413,7 @@ header h1 {
     margin-bottom: 10px !important;
     margin-left: 10px!important;
   }
+
 }
 
 @media (max-width: 300px) {
@@ -475,7 +476,7 @@ header h1 {
   .flood-button {
     font-size: 14px;
     padding: 8px 12px;
-    margin-left: 0;
-    max-width: 100%;
+    margin-left: 1;
+    max-width: 96.5%;
   }
 }
